@@ -1,0 +1,12 @@
+{
+    "lidar_config": [
+       {
+          "broadcast_code": "3GGDJ9G0010027",
+          "enable_connect": true,
+          "return_mode": 0,
+          "coordinate": 0,
+          "imu_rate": 1,
+          "extrinsic_parameter_source": 0
+       }
+    ]
+ }

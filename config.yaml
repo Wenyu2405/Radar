@@ -1,0 +1,126 @@
+global:
+  state: 'B'  # 队伍颜色 R/B
+  camera_mode: 'dahua'  # 'test':测试模式,'hik':海康相机,'video':USB相机（反正我不用），为什么没有迈德hhh因为它和大华犯冲hhh
+  use_serial: True  # 串口启用开关 不用也ok
+  save_img: True  # 是否保存图像
+  map_size: [2800, 1500]  # 战场地图尺寸
+  use_livox: True
+
+serial: # 串口
+  port: '/dev/ttyUSB0'
+  baudrate: 115200
+  timeout: 1
+
+recording:
+  enabled: True               # 开启录制功能
+  auto_start: True            # 自动开始录制（系统启动时）
+  path: "recordings"          # 保存录制的目录
+  fps: 30                     # 帧率
+  codec: "XVID"               # 视频编解码器(XVID, MJPG, H264等)
+  resolution: null            # 录制分辨率，null表示使用原始大小
+  record_raw: true            # 录制原始相机帧
+  record_processed: true      # 录制带有检测结果的处理后帧
+  max_duration_minutes: 0     # 每个文件最大录制时间（分钟），0表示不限制
+  file_prefix: "robomaster_"  # 录制文件名前缀
+  
+  pointcloud:
+    enabled: true              # 是否启用点云录制
+    auto_start: true           # 是否自动开始录制
+    path: "recordings/pointcloud"  # 保存目录
+    max_duration_minutes: 5    # 每个录制文件的最大时间（分钟）
+    file_prefix: "lidar_"      # 文件名前缀
+
+filter:
+  type: "sliding_window"  # 可选值：kalman/sliding_window
+  sliding_window:
+    window_size: 5  # 滑动窗口大小
+    max_inactive_time: 2.0 # 滤波器最大不活跃时间(秒)
+    threshold: 100000.0
+  kalman:
+    max_inactive_time: 2.0
+
+paths:
+  calibration:
+    red: 'arrays_test_red.npy' # 加载标定好的仿射变换矩阵
+    blue: 'arrays_test_blue.npy'
+  map_images:
+    red: 'images-2025/map_red.jpg'  # 加载红方视角地图
+    blue: 'images-2025/map_blue.jpg'
+    mask: 'images-2025/map_mask.jpg' # 加载落点判断掩码
+    backup: 'images-2025/map.png'
+  models:
+    car: 'models/car.engine'
+    armor: 'models/armor.engine'
+
+
+camera_params:
+  dahua:
+    camera1:
+      exposure_time: 30000  # 曝光时间(微秒)
+      gain: 1.0  # 增益
+      gamma: 1.0  # 伽马值
+      intrinsic_matrix:  # 内参矩阵 
+        - [1790.04067904225,-0.00296811366704106,461.390230192382]
+        - [0,1790.27397527708,434.490737031015]
+        - [0, 0, 1]
+      distortion:  # 畸变系数 [k1, k2, p1, p2, k3]
+        - -0.0982253731695896
+        - 0.0485770263419578
+        - 0.785408656864575
+        - 0.000104853113944162
+        - -4.13955792323779e-05
+    camera2:
+      exposure_time: 30000
+      gain: 1.0
+      gamma: 1.0
+      intrinsic_matrix:  # 内参矩阵 
+        - [1793.248250627796, 0, 949.636456967658]
+        - [0, 1793.834338110956, 609.878962719567]
+        - [0, 0, 1]
+      distortion:  # 畸变系数 [k1, k2, p1, p2, k3]
+        - -0.108598385848007
+        - 0.203761151265525
+        - 0
+        - 0
+        - -0.057316805133668
+kalman:
+  process_noise: 1e-5
+  measurement_noise: 1e-1
+
+blind_zone:
+  base_time: 3.0  # 基础预测时间
+  offset_time: 1.7  # 时间偏移量(根据上一帧的信道占用数动态调整单点预测时间)
+  points:
+    R1: [[1741, 433], [1808, 541]]
+    R2: [[1706, 311], [1741, 300]]
+    R7: [[661, 745], [397, 821]]
+    B1: [[1805, 1081], [1776, 410]]
+    B2: [[1964, 273], [1460, 688]]
+    B7: [[2142, 747], [1988, 586]]
+
+
+
+ui:
+  info_panel_size: [700,400]  # 信息面板尺寸
+  map_display_size: [900, 480]  # 地图显示尺寸
+  img_display_size: [1300, 900] # 画面显示尺寸
+
+livox:
+  topic: "/livox/lidar"  
+  camera_params:
+    intrinsic_matrix: [
+      [1791.856591226858, 0, 946.484066937214],
+      [0, 1792.445425763338, 653.288224067918],
+      [0, 0, 1]
+    ]
+    distortion: [-0.102827196719535, 0.170919258356959, 0.027012918718085, 0, 0]
+  calibration:
+ 
+    extrinsic_matrix: [
+      [0.0, -1.0, 0.0, 0.0],
+      [0.0, 0.0, -1.0, 0.0],
+      [1.0, 0.0, 0.0, 0.0],
+      [0.0, 0.0, 0.0, 1.0]
+    ]
+
+
